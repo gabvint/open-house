@@ -32,9 +32,17 @@ router.get('/:listingId', async (req, res) => {
     try {
         const populatedListings = await Listing.findById(req.params.listingId).populate('owner');
 
-        res.render('listings/show.ejs', {
-            listing: populatedListings, 
-        })
+        // this determines if the user has already favorited/clicked the favorite button
+        // it finds if the user's name is one the list of the favorites
+        // true or false
+        const userHasFavorited = populatedListings.favoritedByUsers.some((user) =>
+            user.equals(req.session.user._id)
+          );
+      
+          res.render('listings/show.ejs', {
+            listing: populatedListings,
+            userHasFavorited: userHasFavorited,
+          });
     } catch (error) {
         console.log(error)
         res.redirect('/') 
@@ -89,8 +97,37 @@ router.put('/:listingId', async (req, res) => {
         console.log(error)
         res.redirect('/')
     }
-
-
-
 })
+
+router.post('/:listingId/favorited-by/:userId', async (req, res) => {
+    try {
+        // finds the listing and then pushed the current user's id to the listing's
+        // favorited object
+        await Listing.findByIdAndUpdate(req.params.listingId, {
+            $push: { favoritedByUsers: req.params.userId },
+        });
+
+        res.redirect(`/listings/${req.params.listingId}`)
+    } catch (error) {
+        console.log(error)
+        res.redirect('/')
+    }
+})
+
+router.delete('/:listingId/favorited-by/:userId', async (req, res) => {
+    try {
+        await Listing.findByIdAndUpdate(req.params.listingId, {
+            $pull: { favoritedByUsers: req.params.userId },
+        });
+
+        res.redirect(`/listings/${req.params.listingId}`)
+    } catch (error) {
+        console.log(error)
+        res.redirect('/')
+    }
+})
+
+
+
+
 module.exports = router;
