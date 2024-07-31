@@ -5,22 +5,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>All Listings</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
   <body>
     <%- include('../partials/_navbar.ejs') %>
-    <h1>Here's all the Listings</h1>
 
-    <a href="/listings/new">Add a New Listing</a>
+      <div class="index-header">
+        <h1>All Listings</h1>
+        <a href="/listings/new">+ Add Listing</a>
+      </div>
 
-    <ul>
-        <% listings.forEach(listing => { %>
-         <li>
-             A listing in <%= listing.city %> owned by <%= listing.owner.username %>
-            <a href="/listings/<%= listing._id %>">    
-                View more details
+      <div class="card-container">
+            <% listings.forEach((listing)=> { %>
+            <a href="/listings/<%= listing._id %>">
+              <h4><%= listing.city %> Listing</h4>
+              <p>Owned by <%= listing.owner.username %></p>
             </a>
-         </li>
-        <% }) %>
-    </ul>
+            <% }) %>
+      </div>
   </body>
 </html>
